@@ -51,7 +51,7 @@ const Header = () => {
         {/* Profile Picture */}
         <Link href="/profile">
           <div className="w-8 h-8 md:w-10 md:h-10 rounded-full border border-gray-300 flex items-center justify-center overflow-hidden cursor-pointer">
-            <Image src="/profil.jpg" alt="Profile" width={40} height={40} />
+            <Image src="/Profil.jpg" alt="Profile" width={40} height={40} />
           </div>
         </Link>
       </div>
