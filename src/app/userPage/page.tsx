@@ -1,188 +1,185 @@
-import PickDropForm from "@/components/PickDropForm";
-import Image from "next/image";
+"use client";
 
-export default function Home() {
-  return (
-    <div className="flex flex-col lg:flex-row bg-gray-100 min-h-screen">
-      {/* Sidebar */}
-      <div className="hidden lg:block">
-        <Image src={"/Nav Bar.png"} alt="navbar" width={286} height={900} />
+import { useState, useEffect } from 'react';
+import { client } from "@/app/lib/sanity";
+import { useRouter } from 'next/navigation';
+import Link from 'next/link';
+
+interface Car {
+  _id: string;
+  name: string;
+  brand: string;
+  type: string;
+  image: string;
+}
+
+interface Order {
+  _key: string;
+  car: Car | null;
+  startDate: string;
+  endDate: string;
+  trackingId: string;
+  status: 'pending' | 'shipped' | 'completed';
+}
+
+interface UserOrder {
+  _id: string;
+  userName: string;
+  userEmail: string;
+  phoneNumber: string;
+  orders: Order[];
+}
+
+export default function AdminPage() {
+  const [userOrder, setUserOrder] = useState<UserOrder | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const router = useRouter();
+
+  useEffect(() => {
+    const userEmail = localStorage.getItem('userEmail');
+    
+    if (!userEmail) {
+      router.push('/');
+      return;
+    }
+
+    fetchUserOrders(userEmail);
+  }, [router]);
+
+  const fetchUserOrders = async (email: string) => {
+    try {
+      const query = `*[_type == "userOrder" && userEmail == $email][0]{
+        _id,
+        userName,
+        userEmail,
+        phoneNumber,
+        orders[]{
+          _key,
+          trackingId,
+          startDate,
+          endDate,
+          status,
+          car->{
+            _id,
+            name,
+            brand,
+            type,
+            image
+          }
+        }
+      }`;
+
+      const result = await client.fetch(query, { email });
+      setUserOrder(result);
+    } catch (err: any) {
+      setError('Failed to fetch orders');
+      console.error('Error fetching orders:', err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleClearHistory = async () => {
+    if (!userOrder) return;
+
+    try {
+      await client
+        .patch(userOrder._id)
+        .set({ orders: [] })
+        .commit();
+      
+      fetchUserOrders(userOrder.userEmail);
+    } catch (err) {
+      setError('Failed to clear history');
+      console.error('Error clearing history:', err);
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-xl">Loading...</div>
       </div>
+    );
+  }
 
-      {/* Main Content */}
-      <div className="flex-1 p-4 lg:p-8">
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {/* Left Section */}
-          <div className="lg:col-span-2 space-y-6">
-            {/* Rental Details */}
-            <div className="bg-white p-4 lg:p-6 rounded-lg shadow-lg">
-              <h2 className="font-bold text-lg lg:text-xl mb-3 lg:mb-5">
-                Details Rental
-              </h2>
+  if (error) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-red-500">{error}</div>
+      </div>
+    );
+  }
 
-              {/* Map Image */}
-              <div className="rounded-lg overflow-hidden mb-4">
-                <Image
-                  src="/Maps.png"
-                  alt="Map Placeholder"
-                  width={600}
-                  height={350}
-                  layout="responsive"
-                />
-              </div>
+  if (!userOrder) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-gray-500">No orders found</div>
+      </div>
+    );
+  }
 
-              {/* Car Details */}
-              <div className="flex flex-col sm:flex-row items-center gap-4 mb-4 lg:mb-6">
-                <Image src="/View 1.png" alt="Car" width={132} height={70} />
-                <div className="text-center sm:text-left">
-                  <h3 className="font-bold text-xl lg:text-2xl">
-                    Nissan GT - R
-                  </h3>
-                  <p className="text-gray-500 text-sm lg:text-md">Sport Car</p>
+  return (
+    <div className="container mx-auto px-4 py-8">
+      <div className=' flex flex-col md:flex-row items-center justify-between'>
+      <h1 className="text-3xl font-bold mb-8 text-[#3563e9]">Your Order History</h1>
+      <Link href={'/'}>
+      <button className='bg-[#3563e9] hover:bg-blue-600 text-white px-4 py-2 rounded'>Back To Home</button></Link>
+      
+
+      </div>
+      
+      
+      <div className="mb-8 bg-white rounded-lg shadow-md p-6">
+        <div className="flex justify-between items-center mb-4">
+          <div>
+            <h2 className="text-xl font-semibold">{userOrder.userName}</h2>
+            <p className="text-gray-600">{userOrder.userEmail}</p>
+            <p className="text-gray-600">{userOrder.phoneNumber}</p>
+          </div>
+          <button
+            onClick={handleClearHistory}
+            className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded"
+          >
+            Clear History
+          </button>
+        </div>
+
+        <div className="space-y-4">
+          {userOrder.orders.length === 0 ? (
+            <div className="text-center py-4">
+              <p className="text-gray-500">No orders in your history</p>
+            </div>
+          ) : (
+            userOrder.orders.map((order) => (
+              <div key={order._key} className="border rounded-lg p-4">
+                <div className="flex justify-between items-start">
+                  <div>
+                    <h3 className="font-semibold">
+                      {order.car?.name || 'Car information unavailable'}
+                    </h3>
+                    <p className="text-gray-600">
+                      {order.car ? `${order.car.brand} - ${order.car.type}` : 'Details unavailable'}
+                    </p>
+                    <p className="text-sm text-gray-500">
+                      {new Date(order.startDate).toLocaleDateString()} - {new Date(order.endDate).toLocaleDateString()}
+                    </p>
+                    <p className="text-sm text-gray-500">Tracking ID: {order.trackingId}</p>
+                  </div>
+                  <div className="flex flex-col gap-2">
+                    <div className={`text-sm px-3 py-1 rounded-full text-center
+                      ${order.status === 'pending' ? 'bg-yellow-100 text-yellow-800' : 
+                        order.status === 'shipped' ? 'bg-blue-100 text-blue-800' : 
+                        'bg-green-100 text-green-800'}`}
+                    >
+                      {order.status.charAt(0).toUpperCase() + order.status.slice(1)}
+                    </div>
+                  </div>
                 </div>
               </div>
-
-              <div className="mb-4 lg:mb-6">
-                <PickDropForm />
-              </div>
-
-              {/* Total Price */}
-              <div className="flex flex-col sm:flex-row items-center justify-between border-t pt-4">
-                <p className="font-bold text-sm lg:text-lg">
-                  Total Rental Price
-                  <br />
-                  <span className="text-gray-500 text-xs lg:text-sm font-normal">
-                    Overall price and includes rental discount
-                  </span>
-                </p>
-                <p className="text-2xl lg:text-4xl font-bold text-black mt-2 sm:mt-0">
-                  $80.00
-                </p>
-              </div>
-            </div>
-          </div>
-
-          {/* Right Section */}
-          <div className="space-y-4">
-            {/* Top 5 Car Rental */}
-            <div className="bg-white p-4 lg:p-5 rounded-lg shadow-lg">
-              <h2 className="font-semibold text-lg lg:text-xl mb-4 text-center">
-                Top 5 Car Rental
-              </h2>
-
-              {/* Circular Chart */}
-              <div className="relative w-32 h-32 lg:w-40 lg:h-40 mx-auto mb-6">
-                <Image
-                  src="/Chart.png"
-                  alt="Chart"
-                  width={160}
-                  height={160}
-                  className="rounded-full"
-                />
-                <div className="absolute inset-0 flex flex-col justify-center items-center font-bold text-sm lg:text-lg text-center">
-                  72,030 <br />
-                  <span className="text-gray-500 text-xs lg:text-sm">
-                    Rental Car
-                  </span>
-                </div>
-              </div>
-
-              {/* Car List */}
-              <ul className="space-y-2">
-                {[
-                  { label: "Sport Car", value: "17,439", color: "#0D3559" },
-                  { label: "SUV", value: "9,478", color: "#175D9C" },
-                  { label: "Coupe", value: "18,197", color: "#2185DE" },
-                  { label: "Hatchback", value: "12,510", color: "#63A9E8" },
-                  { label: "MPV", value: "14,406", color: "#A6CEF2" },
-                ].map((item, index) => (
-                  <li
-                    key={index}
-                    className="flex items-center justify-between bg-gray-50 px-3 py-2 rounded-md shadow-sm"
-                  >
-                    <div className="flex items-center gap-2 lg:gap-3">
-                      <div
-                        className="w-3 h-3 lg:w-4 lg:h-4 rounded-full"
-                        style={{ backgroundColor: item.color }}
-                      ></div>
-                      <span className="font-medium text-gray-600 text-sm lg:text-md">
-                        {item.label}
-                      </span>
-                    </div>
-                    <span className="font-bold text-gray-800 text-sm lg:text-md">
-                      {item.value}
-                    </span>
-                  </li>
-                ))}
-              </ul>
-            </div>
-
-            {/* Recent Transactions */}
-            <div className="bg-white p-4 lg:p-6 rounded-lg shadow-lg">
-              <h2 className="font-semibold text-lg lg:text-xl mb-4 flex justify-between">
-                Recent Transaction{" "}
-                <span className="text-blue-500 text-xs lg:text-sm cursor-pointer">
-                  View All
-                </span>
-              </h2>
-              <ul className="space-y-3 lg:space-y-4">
-                {[
-                  {
-                    name: "Nissan GT - R",
-                    tag: "Sport Car",
-                    date: "20 July",
-                    price: "$80.00",
-                    img: "/image2.jpg",
-                  },
-                  {
-                    name: "Koenigsegg",
-                    tag: "Sport Car",
-                    date: "19 July",
-                    price: "$99.00",
-                    img: "/image1.jpg",
-                  },
-                  {
-                    name: "Rolls - Royce",
-                    tag: "Sport Car",
-                    date: "18 July",
-                    price: "$96.00",
-                    img: "/image3.jpg",
-                  },
-                  {
-                    name: "CR - V",
-                    tag: "SUV",
-                    date: "17 July",
-                    price: "$80.00",
-                    img: "/image6.png",
-                  },
-                ].map((car, index) => (
-                  <li key={index} className="flex items-center justify-between">
-                    <div className="flex items-center gap-3">
-                      <Image
-                        src={car.img}
-                        alt={car.name}
-                        width={50}
-                        height={30}
-                        className="rounded-md"
-                      />
-                      <div className="text-sm lg:text-lg">
-                        <h3 className="font-bold">{car.name}</h3>
-                        <p className="text-gray-500 text-xs lg:text-sm">
-                          {car.tag}
-                        </p>
-                      </div>
-                    </div>
-                    <div className="text-right text-xs lg:text-sm">
-                      <p className="text-gray-500">{car.date}</p>
-                      <span className="font-bold text-gray-800">
-                        {car.price}
-                      </span>
-                    </div>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          </div>
+            ))
+          )}
         </div>
       </div>
     </div>

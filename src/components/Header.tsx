@@ -1,62 +1,48 @@
-import React from 'react';
-import { FaHeart, FaBell, FaSearch, FaCog } from 'react-icons/fa';
-import { VscSettings } from "react-icons/vsc";
-import Image from 'next/image';
-import Link from 'next/link';
+import React from "react";
+import { IoIosNotifications } from "react-icons/io";
+import Acount from "./account";
+import Link from "next/link";
+import SearchBar from "./Searchbar";
+import { FaRegHeart } from "react-icons/fa6";
 
-const Header = () => {
+export default function Header() {
   return (
-    <header className="bg-white py-4 px-4 md:px-8 shadow-md flex flex-wrap items-center justify-between">
-      {/* Logo and Search Bar Container */}
-      <div className="flex items-center space-x-4 lg:space-x-20 w-full lg:w-auto">
+    <header className="w-full h-auto flex flex-col md:flex-row items-center justify-between p-4 md:p-6 lg:p-8 border-b border-[#e7eef6] bg-white shadow-sm">
+      {/* Logo and Search Section */}
+      <div className="flex flex-col md:flex-row items-center gap-4 md:gap-12 lg:gap-16 w-full md:w-auto">
         {/* Logo */}
-        <div className="text-xl md:text-2xl font-bold text-blue-600">MORENT</div>
-        
+        <Link href="/">
+          <h1 className="text-[#3360e9] text-3xl sm:text-4xl font-bold cursor-pointer hover:text-blue-600 transition">
+            MORENT
+          </h1>
+        </Link>
         {/* Search Bar */}
-        <div className="relative w-full lg:w-[492px] h-[44px] mt-2 lg:mt-0">
-          <input
-            type="text"
-            placeholder="Search something here"
-            className="w-full h-full border rounded-full py-2 px-4 pl-12 pr-12 text-sm border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
-            style={{ borderRadius: '70px' }}
-          />
-          <div className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-500">
-            <FaSearch />
-          </div>
-          <div className="absolute text-2xl right-4 top-1/2 transform -translate-y-1/2 text-gray-500">
-            <VscSettings />
-          </div>
+        <div className="relative w-full md:w-auto">
+          <SearchBar />
         </div>
       </div>
 
-      {/* Icons */}
-      <div className="flex items-center space-x-2 lg:space-x-4 mt-2 lg:mt-0">
-        <Link href="/favorites">
-          <div className="w-8 h-8 md:w-10 md:h-10 rounded-full border border-gray-300 flex items-center justify-center">
-            <FaHeart className="text-lg md:text-xl text-gray-600 cursor-pointer" />
-          </div>
+      {/* Icons Section */}
+      <div className="flex items-center gap-6 md:gap-8 mt-4 md:mt-0">
+        {/* Wishlist Icon */}
+        <Link href="/wishlist">
+          <FaRegHeart
+            className="text-gray-500 hover:text-blue-500 cursor-pointer transition duration-300"
+            size={28}
+          />
         </Link>
-        <Link href="/notifications">
-          <div className="relative w-8 h-8 md:w-10 md:h-10 rounded-full border border-gray-300 flex items-center justify-center">
-            <FaBell className="text-lg md:text-xl text-gray-600 cursor-pointer" />
-            <span className="absolute top-1 right-0 w-3 h-3 bg-red-500 rounded-full"></span>
+        {/* Notifications Icon */}
+        <IoIosNotifications
+          className="text-gray-500 hover:text-blue-500 cursor-pointer transition duration-300"
+          size={28}
+        />
+        {/* Account Button */}
+        <div className="flex items-center">
+          <div className="px-4 py-2 bg-blue-500 text-white font-medium rounded-lg shadow-md hover:bg-blue-600 transition duration-300">
+            <Acount />
           </div>
-        </Link>
-        <Link href="/settings">
-          <div className="w-8 h-8 md:w-10 md:h-10 rounded-full border border-gray-300 flex items-center justify-center">
-            <FaCog className="text-lg md:text-xl text-gray-600 cursor-pointer" />
-          </div>
-        </Link>
-
-        {/* Profile Picture */}
-        <Link href="/profile">
-          <div className="w-8 h-8 md:w-10 md:h-10 rounded-full border border-gray-300 flex items-center justify-center overflow-hidden cursor-pointer">
-            <Image src="/Profil.jpg" alt="Profile" width={40} height={40} />
-          </div>
-        </Link>
+        </div>
       </div>
     </header>
   );
-};
-
-export default Header;
+}

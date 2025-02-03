@@ -1,74 +1,66 @@
-import React from "react";
-import Link from "next/link";
+import React from 'react';
 
 export default function Footer() {
   return (
-    <footer className="relative flex flex-col items-center space-y-6 px-6 w-full bg-white py-8">
-      {/* Top Section */}
-      <div className="w-full flex flex-col lg:flex-row items-start justify-between gap-8">
-        {/* Brand Section */}
-        <div className="brand flex flex-col space-y-3 w-full lg:w-1/3">
-          <h1 className="text-blue-600 text-3xl font-extrabold text-center lg:text-left">
-            MORENT
-          </h1>
-          <p className="text-gray-600 text-center lg:text-left max-w-md">
-            Our vision is to provide convenience
-            <br />
-            and help increase your sales business.
+    <footer className="flex flex-col items-center justify-center gap-8 px-6 w-full bg-white py-8 shadow-sm">
+      {/* Main Section */}
+      <div className="first w-full flex flex-wrap items-start justify-between gap-8">
+        {/* Intro Section */}
+        <div className="intro flex flex-col gap-3 w-full lg:w-1/3">
+          <h1 className="text-[#3563e9] text-2xl lg:text-3xl font-bold text-center lg:text-left">MORENT</h1>
+          <p className="text-gray-500 text-center lg:text-left">
+            Our vision is to provide convenience and help increase your sales business.
           </p>
         </div>
 
         {/* Links Section */}
-        <div className="links flex flex-wrap justify-center lg:justify-end gap-8 w-full lg:w-2/3 mb-5">
-          <div className="link-group">
-            <h2 className="font-semibold text-xl">About</h2>
-            <ul className="space-y-4 text-sm mt-4">
-              <li>How it works</li>
-              <li>Featured</li>
-              <li>Partnership</li>
-              <li>Business Relations</li>
+        <div className="lists flex flex-wrap gap-8 justify-center lg:justify-end w-full lg:w-2/3">
+          {/* About */}
+          <div className="about">
+            <ul className="flex flex-col gap-2">
+              <li className="font-bold text-lg text-gray-800">About</li>
+              <li className="text-gray-600 hover:text-blue-500 cursor-pointer">How it works</li>
+              <li className="text-gray-600 hover:text-blue-500 cursor-pointer">Featured</li>
+              <li className="text-gray-600 hover:text-blue-500 cursor-pointer">Partnership</li>
+              <li className="text-gray-600 hover:text-blue-500 cursor-pointer">Business Relation</li>
             </ul>
           </div>
-          <div className="link-group">
-            <h2 className="font-semibold text-xl">Community</h2>
-            <ul className="space-y-4 text-sm mt-4">
-              <li>Events</li>
-              <li>Blog</li>
-              <li>Podcast</li>
-              <li>Invite Friends</li>
+          {/* Community */}
+          <div className="community">
+            <ul className="flex flex-col gap-2">
+              <li className="font-bold text-lg text-gray-800">Community</li>
+              <li className="text-gray-600 hover:text-blue-500 cursor-pointer">Events</li>
+              <li className="text-gray-600 hover:text-blue-500 cursor-pointer">Blog</li>
+              <li className="text-gray-600 hover:text-blue-500 cursor-pointer">Podcast</li>
+              <li className="text-gray-600 hover:text-blue-500 cursor-pointer">Invite a friend</li>
             </ul>
           </div>
-          <div className="link-group">
-            <h2 className="font-semibold text-xl">Socials</h2>
-            <ul className="space-y-4 text-sm mt-4">
-              <li>
-                <Link href="https://www.discord.com">Discord</Link>
-              </li>
-              <li>
-                <Link href="https://www.instagram.com">Instagram</Link>
-              </li>
-              <li>
-                <Link href="https://www.facebook.com">Facebook</Link>
-              </li>
-              <li>
-                <Link href="https://www.twitter.com">Twitter</Link>
-              </li>
+          {/* Socials */}
+          <div className="socials">
+            <ul className="flex flex-col gap-2">
+              <li className="font-bold text-lg text-gray-800">Socials</li>
+              <li className="text-gray-600 hover:text-blue-500 cursor-pointer">Discord</li>
+              <li className="text-gray-600 hover:text-blue-500 cursor-pointer">Instagram</li>
+              <li className="text-gray-600 hover:text-blue-500 cursor-pointer">Facebook</li>
+              <li className="text-gray-600 hover:text-blue-500 cursor-pointer">Twitter</li>
             </ul>
           </div>
         </div>
       </div>
 
-      {/* Divider */}
-      <div className="border-t w-full border-gray-200"></div>
+      {/* Divider Line */}
+      <div className="line border-t w-full border-gray-200"></div>
 
-      {/* Bottom Section */}
-      <div className="w-full flex flex-col lg:flex-row items-center justify-between gap-4">
-        <div className="text-sm text-center lg:text-left w-full lg:w-auto">
-          <p className="font-bold">&copy; 2022 MORENT. All rights reserved.</p>
+      {/* Footer Bottom Section */}
+      <div className="last w-full flex flex-wrap items-center justify-between gap-4">
+        {/* Left Section */}
+        <div className="first text-center lg:text-left w-full lg:w-auto">
+          <h1 className="font-bold text-sm text-gray-600">©2022 MORENT. All rights reserved</h1>
         </div>
-        <div className="policies flex space-x-6 justify-center lg:justify-end w-full lg:w-auto">
-          <p className="font-bold text-sm">Privacy Policy</p>
-          <p className="font-bold text-sm">Terms & Conditions</p>
+        {/* Right Section */}
+        <div className="second flex flex-wrap justify-center lg:justify-end items-center gap-4 w-full lg:w-auto">
+          <h1 className="font-bold text-sm text-gray-600 hover:text-blue-500 cursor-pointer">Privacy & Policy</h1>
+          <h1 className="font-bold text-sm text-gray-600 hover:text-blue-500 cursor-pointer">Terms & Conditions</h1>
         </div>
       </div>
     </footer>

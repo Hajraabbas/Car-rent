@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
+import { ClerkProvider } from '@clerk/clerk-react';
 import Header from "@/components/Header";
 
 import FooterHandler from "@/components/FooterHandler";
@@ -18,13 +19,14 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-      <body className={inter.className}>
-        <Header />
-        {children}
-        <FooterHandler />
-        
+    <ClerkProvider publishableKey={process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY || ""}>
+      <html lang="en">
+        <body className={inter.className}>
+          <Header />
+          {children}
+          <FooterHandler />
         </body>
-    </html>
+      </html>
+    </ClerkProvider>
   );
 }
